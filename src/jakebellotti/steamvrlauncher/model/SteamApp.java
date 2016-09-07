@@ -1,5 +1,7 @@
 package jakebellotti.steamvrlauncher.model;
 
+import java.util.Optional;
+
 import javafx.scene.image.Image;
 
 /**
@@ -11,7 +13,7 @@ public class SteamApp {
 
 	private final int id;
 	private final int steamVRManifestFileID;
-	private final Image image;
+	private final Optional<Image> image;
 	private final String appKey;
 	private final String launchType;
 	private final String name;
@@ -20,7 +22,7 @@ public class SteamApp {
 	private SteamAppSettings savedSettings;
 	private SteamAppSettings currentSettings;
 
-	public SteamApp(int id, int steamVRManifestFileID, Image image, String appKey, String launchType, String name, String imagePath, String launchPath,
+	public SteamApp(int id, int steamVRManifestFileID, final Optional<Image> image, String appKey, String launchType, String name, String imagePath, String launchPath,
 			SteamAppSettings settings) {
 		super();
 		this.id = id;
@@ -43,7 +45,7 @@ public class SteamApp {
 		return steamVRManifestFileID;
 	}
 
-	public Image getImage() {
+	public Optional<Image> getImage() {
 		return image;
 	}
 

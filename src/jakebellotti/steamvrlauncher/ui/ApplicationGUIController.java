@@ -161,7 +161,8 @@ public class ApplicationGUIController {
 			final FXMLLoader loader = new FXMLLoader();
 			stage.setTitle("Steam Enhanced Launcher - Version " + Config.VERSION + " - Jake Bellotti");
 			loader.setController(new ApplicationGUIController(stage));
-			stage.setScene(new Scene(loader.load(ApplicationGUIController.class.getResource("ApplicationGUI.fxml").openStream())));
+			stage.setScene(new Scene(
+					loader.load(ApplicationGUIController.class.getResource("ApplicationGUI.fxml").openStream())));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -190,7 +191,8 @@ public class ApplicationGUIController {
 		this.plusRTMImageView.setOnMousePressed(this::plusRTMImageViewMousePressed);
 		this.saveApplicationButton.setOnMouseClicked(this::saveApplicationButtonMouseClicked);
 		searchApplicationsTextField.setOnKeyReleased(this::searchApplicationsTextFieldKeyReleased);
-		fileVersionHistoryListView.getSelectionModel().selectedItemProperty().addListener(l -> fileVersionHistoryListViewItemSelected());
+		fileVersionHistoryListView.getSelectionModel().selectedItemProperty()
+				.addListener(l -> fileVersionHistoryListViewItemSelected());
 		revertFileModificationButton.setOnMouseClicked(this::revertFileModificationButtonMouseClicked);
 		this.rescanSteamFoldersButton.setOnMouseClicked(this::rescanSteamFoldersButtonMouseClicked);
 
@@ -217,42 +219,101 @@ public class ApplicationGUIController {
 
 	private final void rescanSteamFoldersButtonMouseClicked(final MouseEvent e) {
 		// TODO implement file rescanning
-		//TODO clean this up, make it more readable
+		// TODO clean this up, make it more readable
 		SteamVRLauncher.getConnection().selectAllSteamVRManifestFiles().forEach(manifest -> {
+			if (!manifest.asFile().exists()) {
+				Alerts.showErrorAlert("File not found", "Steam VR Apps Manifest file not found",
+						"Make sure your steam folders are indexed and this file exists.");
+				return;
+			}
 
-			if (manifest.asFile().lastModified() > manifest.getLastModified()) {
-				final Optional<ArrayList<SteamVRApp>> found = SteamVRAppsFileParser.parseManifest(new File("./test/steamapps.vrmanifest"));
+			final Optional<ArrayList<SteamVRApp>> found = SteamVRAppsFileParser.parseManifest(manifest.asFile());
 
-				found.ifPresent(o -> {
-					final ArrayList<String> gameNames = new ArrayList<>();
-					o.forEach(s -> gameNames.add(s.getAppKey()));
-					final ArrayList<String> uniqueNames = SteamVRLauncher.getConnection().selectUniqueSteamApps(gameNames);
-					for (String s : uniqueNames) {
-						final Iterator<SteamVRApp> iterator = o.iterator();
-						while (iterator.hasNext()) {
-							if (iterator.next().getAppKey().equalsIgnoreCase(s))
-								iterator.remove();
+			found.ifPresent(o -> {
+				final ArrayList<String> gameNames = new ArrayList<>();
+				o.forEach(s -> gameNames.add(s.getAppKey()));
+				final ArrayList<String> uniqueNames = SteamVRLauncher.getConnection().selectUniqueSteamApps(gameNames);
+
+				final Iterator<SteamVRApp> iterator = o.iterator();
+				while (iterator.hasNext()) {
+					final SteamVRApp current = iterator.next();
+					if (!uniqueNames.contains(current.getAppKey()))
+						iterator.remove();
+				}
+
+				if (o.size() == 0) {
+					Alerts.showInformationAlert("Rescan Steam Folders", "No new applications were added", "");
+					return;
+				}
+
+				final AnchorPane loadingScreen = LoadingOverlayController.getSingleton().getRoot();
+				rootPane.getChildren().add(loadingScreen);
+				loadingScreen.toFront();
+
+				loadingScreen.prefWidthProperty().bind(rootPane.widthProperty());
+				loadingScreen.prefHeightProperty().bind(rootPane.heightProperty());
+
+				SteamVRLauncher.submitRunnable(() -> {
+
+					Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
+							.setText("Saving " + o.size() + " games"));
+					final HashMap<Integer, SteamVRApp> gameIDs = new HashMap<>();
+
+					for (SteamVRApp currentApp : o) {
+						final int appDatabaseID = SteamVRLauncher.getConnection().insertSteamApp(manifest.getId(),
+								currentApp);
+						if (appDatabaseID > 0) {
+							gameIDs.put(appDatabaseID, currentApp);
 						}
 					}
 
-					System.out.println("All parsed files: " + o);
-					System.out.println("Unique file names: " + uniqueNames);
+					final Iterator<Integer> iter = gameIDs.keySet().iterator();
+					while (iter.hasNext()) {
+						final Integer currentKey = iter.next();
+						final SteamVRApp currentApp = gameIDs.get(currentKey);
+						Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
+								.setText("Downloading image for '" + currentApp.getName() + "'"));
 
-					// final AnchorPane loadingScreen =
-					// LoadingOverlayController.getSingleton().getRoot();
-					// rootPane.getChildren().add(loadingScreen);
-					// loadingScreen.toFront();
-					//
-					// loadingScreen.prefWidthProperty().bind(rootPane.widthProperty());
-					// loadingScreen.prefHeightProperty().bind(rootPane.heightProperty());
-				});
-			}
+						final Optional<InputStream> result = SteamDBParser.getImage(currentApp);
+						if (result.isPresent()) {
+							final int imageID = SteamVRLauncher.getConnection().insertImage(result.get());
+							if (imageID > 0) {
+								SteamVRLauncher.getConnection().assignImageToSteamApp(currentKey, imageID);
+							}
+						}
+					}
+					Platform.runLater(() -> rootPane.getChildren().remove(loadingScreen));
+					refreshApps();
+					refreshSteamFolders();
+				} , "Indexing steam apps");
+
+				// TODO add them here
+
+				Alerts.showInformationAlert("Rescan Steam Folders", "New applications were added",
+						"" + o.size() + " new applications were added.");
+
+			});
 		});
 	}
 
-	private final void revertFileModificationButtonMouseClicked(final MouseEvent e) {
+	private final void revertFileModificationButtonMouseClicked(final MouseEvent event) {
 		// TODO implement file reverting
-		Alerts.showInformationAlert("Not yet implemented", "This feature is not yet implemented", "");
+		final FileModificationHistory selected = fileVersionHistoryListView.getSelectionModel().getSelectedItem();
+		if(selected == null)
+			return;
+		if(! selected.asFile().exists()) {
+			//TODO maybe add an option to recreate the file?
+			Alerts.showErrorAlert("File not found", "The file '" + selected.asFile().getName() + "' does not exist.", "The file could not be reverted to it's original contents.");
+			return;
+		}
+		
+		try(FileWriter writer = new FileWriter(selected.asFile())) {
+			writer.write(selected.getOldContent());
+			writer.close();
+			Alerts.showInformationAlert("Success", "File contents have been reverted", "Successfully reverted the file '" + selected.asFile().getName() + "' to its original contents.");
+		} catch(Exception e) {
+			Alerts.showErrorAlert("Error", "An error occurred when reverting the file", "Cause: " + e.getMessage());
+		}
 	}
 
 	private final void fileVersionHistoryListViewItemSelected() {
@@ -262,14 +323,15 @@ public class ApplicationGUIController {
 		this.revertFileModificationButton.setVisible(selectedExists);
 		this.fileHistoryOriginalTextArea.setVisible(selectedExists);
 		this.fileHistoryModifiedTextArea.setVisible(selectedExists);
-
-		if (selected == null) {
-			// TODO update a blank
+		
+		if(! selectedExists) {
+			this.fileHistoryOriginalTextArea.clear();
+			this.fileHistoryModifiedTextArea.clear();
 			return;
 		}
+
 		this.fileHistoryOriginalTextArea.setText(selected.getOldContent());
 		this.fileHistoryModifiedTextArea.setText(selected.getNewContent());
-		// TODO update selected one
 	}
 
 	private final void minusRTMImageViewMousePressed(final MouseEvent e) {
@@ -294,7 +356,8 @@ public class ApplicationGUIController {
 			return;
 		final double currentRTMValue = (this.renderTargetMultiplierSlider.getValue() * 10);
 
-		selected.setCurrentSettings(new SteamAppSettings((int) currentRTMValue, selected.getCurrentSettings().isAllowReprojection()));
+		selected.setCurrentSettings(
+				new SteamAppSettings((int) currentRTMValue, selected.getCurrentSettings().isAllowReprojection()));
 		checkDirty();
 	}
 
@@ -349,11 +412,13 @@ public class ApplicationGUIController {
 			if (steamVR == null) {
 				steamVR = new JSONObject();
 				steamVR.put("allowReprojection", selected.getCurrentSettings().isAllowReprojection());
-				steamVR.put("renderTargetMultiplier", ((double) (selected.getCurrentSettings().getRenderTargetMultiplier() / 10d)));
+				steamVR.put("renderTargetMultiplier",
+						((double) (selected.getCurrentSettings().getRenderTargetMultiplier() / 10d)));
 				settings.put("steamvr", steamVR);
 			} else {
 				steamVR.put("allowReprojection", selected.getCurrentSettings().isAllowReprojection());
-				steamVR.put("renderTargetMultiplier", ((double) (selected.getCurrentSettings().getRenderTargetMultiplier() / 10d)));
+				steamVR.put("renderTargetMultiplier",
+						((double) (selected.getCurrentSettings().getRenderTargetMultiplier() / 10d)));
 			}
 
 			final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -365,17 +430,19 @@ public class ApplicationGUIController {
 
 			final String changeComment = "Changed settings before launching '" + selected.getName() + "'";
 
-			SteamVRLauncher.getConnection().insertFileModificationHistory(steamVRSettingsFile.get().getAbsolutePath(), changeComment, builder.toString(),
-					jsonOutput);
+			SteamVRLauncher.getConnection().insertFileModificationHistory(steamVRSettingsFile.get().getAbsolutePath(),
+					changeComment, builder.toString(), jsonOutput);
 			refreshFileModificationHistory();
 
 			// TODO organise the JSON when exporting
 
 			if (vrMonitorRunning) {
-				final Process killVRMonitor = Runtime.getRuntime().exec("taskkill /F /IM " + SteamConstants.STEAM_VR_MONITOR_PROCESS_NAME);
+				final Process killVRMonitor = Runtime.getRuntime()
+						.exec("taskkill /F /IM " + SteamConstants.STEAM_VR_MONITOR_PROCESS_NAME);
 				killVRMonitor.waitFor();
 			}
 
+			//TODO maybe even find another way to deal with these SteamVR bugs
 			// TODO extract this to a settings variable
 			Thread.sleep(5000);
 
@@ -449,7 +516,8 @@ public class ApplicationGUIController {
 	private final void saveApplicationButtonMouseClicked(final MouseEvent e) {
 		final SteamApp selected = this.gamesListView.getSelectionModel().getSelectedItem();
 		if (selected != null) {
-			SteamVRLauncher.getConnection().updateSteamAppSettings(selected.getId(), selected.getCurrentSettings().getRenderTargetMultiplier(),
+			SteamVRLauncher.getConnection().updateSteamAppSettings(selected.getId(),
+					selected.getCurrentSettings().getRenderTargetMultiplier(),
 					selected.getCurrentSettings().isAllowReprojection());
 			selected.setSavedSettings(selected.getCurrentSettings().copy());
 			gamesListViewItemSelected();
@@ -465,7 +533,8 @@ public class ApplicationGUIController {
 			return;
 		final double currentRTMValue = (this.renderTargetMultiplierSlider.getValue() * 10);
 
-		selected.setCurrentSettings(new SteamAppSettings((int) currentRTMValue, this.reprojectionCheckBox.isSelected()));
+		selected.setCurrentSettings(
+				new SteamAppSettings((int) currentRTMValue, this.reprojectionCheckBox.isSelected()));
 		checkDirty();
 	}
 
@@ -495,7 +564,12 @@ public class ApplicationGUIController {
 			return;
 
 		this.currentGameLabel.setText(selected.getName());
-		this.currentApplicationImageView.setImage(selected.getImage());
+		if (selected.getImage().isPresent()) {
+			this.currentApplicationImageView.setImage(selected.getImage().get());
+		} else {
+			// TODO maybe set as a custom image that says 'image not found'
+			this.currentApplicationImageView.setImage(Resources.getImageNotFound());
+		}
 
 		final double currentRTM = (selected.getCurrentSettings().getRenderTargetMultiplier() / 10d);
 		final double savedRTM = (selected.getSavedSettings().getRenderTargetMultiplier() / 10d);
@@ -548,7 +622,15 @@ public class ApplicationGUIController {
 	private final void changeListView() {
 		// TODO make this either an image or the name of the app
 		JavaFXUtils.setListViewCellFactory(gamesListView, (cell, item, b) -> {
-			final ImageView view = new ImageView(item.getImage());
+			final Optional<Image> image = item.getImage();
+			if (!image.isPresent()) {
+				final Label label = new Label(item.getName());
+				label.setStyle("-fx-font-size: 20px;");
+				cell.setGraphic(label);
+				return;
+			}
+
+			final ImageView view = new ImageView(image.get());
 			view.setPreserveRatio(true);
 
 			this.gamesListView.widthProperty().addListener(l -> {
@@ -604,7 +686,8 @@ public class ApplicationGUIController {
 		if (chosen != null) {
 			int count = SteamVRLauncher.getConnection().selectSteamAppsFolders(chosen);
 			if (count > 0) {
-				Alerts.showErrorAlert("Error", "Folder already exists", "The given folder has already been indexed. You may refresh though.");
+				Alerts.showErrorAlert("Error", "Folder already exists",
+						"The given folder has already been indexed. You may refresh though.");
 				return;
 			}
 			final AnchorPane loadingScreen = LoadingOverlayController.getSingleton().getRoot();
@@ -616,11 +699,13 @@ public class ApplicationGUIController {
 
 			// TODO clean this up
 
-			//TODO a thread here never closes
+			// TODO a thread here never closes
 			SteamVRLauncher.submitRunnable(() -> {
-				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel().setText("Saving directory"));
+				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
+						.setText("Saving directory"));
 				final int folderID = SteamVRLauncher.getConnection().insertSteamFolder(chosen);
-				final File vrManifestFile = new File(chosen.getAbsolutePath() + SteamConstants.STEAM_VR_APPS_MANIFEST_FILE_LOCATION);
+				final File vrManifestFile = new File(
+						chosen.getAbsolutePath() + SteamConstants.STEAM_VR_APPS_MANIFEST_FILE_LOCATION);
 
 				if (!vrManifestFile.exists()) {
 					Platform.runLater(() -> {
@@ -632,10 +717,13 @@ public class ApplicationGUIController {
 					return;
 				}
 
-				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel().setText("Saving manifest file location"));
-				final int manifestID = SteamVRLauncher.getConnection().insertSteamManifestFile(folderID, vrManifestFile);
+				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
+						.setText("Saving manifest file location"));
+				final int manifestID = SteamVRLauncher.getConnection().insertSteamManifestFile(folderID,
+						vrManifestFile);
 
-				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel().setText("Parsing manifest file"));
+				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
+						.setText("Parsing manifest file"));
 				final Optional<ArrayList<SteamVRApp>> apps = SteamVRAppsFileParser.parseManifest(vrManifestFile);
 				if (!apps.isPresent()) {
 					// TODO be more specific with this...
@@ -648,11 +736,12 @@ public class ApplicationGUIController {
 					return;
 				}
 
-				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel().setText("Saving " + apps.get().size() + " games"));
+				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
+						.setText("Saving " + apps.get().size() + " games"));
 				final HashMap<Integer, SteamVRApp> gameIDs = new HashMap<>();
 
 				for (SteamVRApp currentApp : apps.get()) {
-					final int appDatabaseID = SteamVRLauncher.getConnection().insertSteamApp(manifestID, currentApp);// TODO
+					final int appDatabaseID = SteamVRLauncher.getConnection().insertSteamApp(manifestID, currentApp);
 					if (appDatabaseID > 0) {
 						gameIDs.put(appDatabaseID, currentApp);
 					}
@@ -676,7 +765,7 @@ public class ApplicationGUIController {
 				Platform.runLater(() -> rootPane.getChildren().remove(loadingScreen));
 				refreshApps();
 				refreshSteamFolders();
-			}, "Indexing steam apps");
+			} , "Indexing steam apps");
 		}
 	}
 

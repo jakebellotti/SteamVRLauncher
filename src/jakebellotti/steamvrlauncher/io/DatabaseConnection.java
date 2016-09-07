@@ -71,7 +71,7 @@ public abstract class DatabaseConnection {
 			while (set.next()) {
 				final int id = set.getInt("fldID");
 				final int steamVRManifestFileID = set.getInt("fldFKSteamVRManifestFileID");
-				final int selectedImageID = set.getInt("fldFKSelectedImageID");
+				final Integer selectedImageID = set.getInt("fldFKSelectedImageID");
 				final String appKey = set.getString("fldAppKey");
 				final String launchType = set.getString("fldLaunchType");
 				final String name = set.getString("fldName");
@@ -81,7 +81,7 @@ public abstract class DatabaseConnection {
 				final Optional<Image> image = selectImage(selectedImageID);
 				final Optional<SteamAppSettings> settings = selectSteamAppSettings(id);
 
-				toReturn.add(new SteamApp(id, steamVRManifestFileID, image.get(), appKey, launchType, name, imagePath, launchPath, settings.get()));
+				toReturn.add(new SteamApp(id, steamVRManifestFileID, image, appKey, launchType, name, imagePath, launchPath, settings.get()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -99,7 +99,7 @@ public abstract class DatabaseConnection {
 				final boolean allowReprojection = set.getBoolean("fldAllowReprojection");
 				set.close();
 
-				return Optional.of(new SteamAppSettings(renderTargetMultiplier, allowReprojection));
+				return Optional.ofNullable(new SteamAppSettings(renderTargetMultiplier, allowReprojection));
 			}
 
 		} catch (Exception e) {
@@ -187,6 +187,8 @@ public abstract class DatabaseConnection {
 			sql += "?";
 			sql += (i + 1 == given.size()) ? ")" : ",";
 		}
+		if(! sql.endsWith(")"))
+			sql += ")";
 		try (PreparedStatement statement = connection.prepareStatement(sql)) {
 			for (int i = 0; i < given.size(); i++)
 				statement.setString(i + 1, given.get(i));

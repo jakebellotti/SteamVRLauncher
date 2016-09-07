@@ -15,9 +15,8 @@ public class SteamDBParser {
 			InputStream in = new BufferedInputStream(url.openStream());
 			return Optional.ofNullable(in);
 		} catch(Exception e) {
-			e.printStackTrace();
+			return Optional.empty();
 		}
-		return Optional.empty();
 	}
 
 }

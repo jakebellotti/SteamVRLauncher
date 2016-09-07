@@ -23,6 +23,11 @@ public class SteamVRApp {
 		this.imagePath = imagePath;
 		this.launchURL = launchURL;
 	}
+	
+	@Override
+	public String toString() {
+		return name + " - " +appKey;
+	}
 
 	public int getDatabaseID() {
 		return databaseID;
