@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="rootPane" prefHeight="730.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TabPane fx:id="rootTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="628.0" prefWidth="839.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab text="Applications">
+               <content>
+                  <AnchorPane style="-fx-background-color: yellow;">
+                     <children>
+                        <SplitPane dividerPositions="0.3109339407744875" prefHeight="691.0" prefWidth="880.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="649.0" prefWidth="268.0" SplitPane.resizableWithParent="false">
+                                 <children>
+                                    <ListView fx:id="gamesListView" layoutX="1.0" layoutY="21.0" prefHeight="487.0" prefWidth="266.0" AnchorPane.bottomAnchor="129.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="66.0" />
+                                    <Label fx:id="gamesLabel" alignment="CENTER" layoutX="14.0" text="Applications" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                       <font>
+                                          <Font name="System Bold" size="20.0" />
+                                       </font>
+                                    </Label>
+                                    <TextField fx:id="searchApplicationsTextField" layoutX="14.0" layoutY="30.0" promptText="Search applications" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0">
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font>
+                                    </TextField>
+                                    <Button fx:id="upApplicationsButton" layoutY="559.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="267.0" style="-fx-background-radius: 0;" text="▲" AnchorPane.bottomAnchor="86.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                       <font>
+                                          <Font name="System Bold" size="20.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="downApplicationsButton" layoutY="602.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="268.0" style="-fx-background-radius: 0;" text="▼" AnchorPane.bottomAnchor="43.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                       <font>
+                                          <Font name="System Bold" size="20.0" />
+                                       </font>
+                                    </Button>
+                                    <Button fx:id="rescanSteamFoldersButton" layoutY="640.0" maxHeight="44.0" mnemonicParsing="false" prefHeight="44.0" style="-fx-background-radius: 0;" text="Rescan Steam Folders" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                              </AnchorPane>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="537.0" prefWidth="516.0">
+                                 <children>
+                                    <AnchorPane layoutY="334.0" prefHeight="187.0" prefWidth="491.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                       <children>
+                                          <Slider fx:id="renderTargetMultiplierSlider" blockIncrement="0.1" layoutX="67.0" layoutY="31.0" majorTickUnit="1.0" max="3.0" minorTickCount="10" prefHeight="45.0" prefWidth="357.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0" AnchorPane.leftAnchor="67.0" AnchorPane.rightAnchor="67.0" />
+                                          <Label fx:id="renderTargetMultiplierLabel" alignment="CENTER" layoutX="5.0" text="Render Target Multiplier" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                             <font>
+                                                <Font size="20.0" />
+                                             </font>
+                                          </Label>
+                                          <HBox alignment="CENTER" layoutX="216.0" layoutY="54.0" AnchorPane.leftAnchor="216.0" AnchorPane.rightAnchor="216.0" />
+                                          <ImageView fx:id="plusRTMImageView" fitHeight="60.0" fitWidth="50.0" layoutX="5.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="5.0" />
+                                          <ImageView fx:id="minusRTMImageView" fitHeight="60.0" fitWidth="50.0" layoutX="427.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="5.0" />
+                                          <CheckBox fx:id="reprojectionCheckBox" alignment="CENTER" layoutY="152.0" mnemonicParsing="false" text="Allow Reprojection?" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                             <font>
+                                                <Font size="20.0" />
+                                             </font>
+                                          </CheckBox>
+                                          <HBox alignment="CENTER" layoutX="169.0" layoutY="76.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                             <children>
+                                                <AnchorPane>
+                                                   <children>
+                                                      <TextField fx:id="currentRenderTargetMultiplierTextField" alignment="CENTER" editable="false" layoutY="25.0" prefHeight="44.0" prefWidth="59.0" text="5.5">
+                                                         <font>
+                                                            <Font size="20.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <TextField fx:id="savedRenderTargetMultiplierTextField" alignment="CENTER" editable="false" layoutX="67.0" layoutY="25.0" prefHeight="44.0" prefWidth="59.0" text="5.5">
+                                                         <font>
+                                                            <Font size="20.0" />
+                                                         </font>
+                                                      </TextField>
+                                                      <Label fx:id="currentRenderTargetMultiplierLabel" alignment="CENTER" prefHeight="21.0" prefWidth="59.0" text="Current">
+                                                         <font>
+                                                            <Font size="16.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label fx:id="savedRenderTargetMultiplierLabel" alignment="CENTER" layoutX="67.0" prefHeight="21.0" prefWidth="59.0" text="Saved">
+                                                         <font>
+                                                            <Font size="16.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </AnchorPane>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </AnchorPane>
+                                    <StackPane prefHeight="45.0" prefWidth="491.0" style="-fx-background-color: linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),        linear-gradient(#020b02, #3a3a3a),        linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #343534 80%, #242424 100%),        linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #343534 80%, #262626 100%),        linear-gradient(#777777 0%, #606060 50%, #505250 51%, #2a2b2a 100%);" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Label fx:id="currentGameLabel" alignment="CENTER" prefHeight="58.0" style="-fx-text-fill: white; -fx-effect: dropshadow( one-pass-box , black , 0, 0.0 , 0 , -1 );" text="Current App">
+                                             <font>
+                                                <Font name="System Bold" size="36.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </StackPane>
+                                    <Button fx:id="launchApplicationButton" layoutX="14.0" layoutY="455.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="391.0" text="Launch" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="95.0">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Button>
+                                    <HBox fx:id="currentAppImageHBox" alignment="CENTER" layoutY="53.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="53.0">
+                                       <children>
+                                          <ImageView fx:id="currentApplicationImageView" fitHeight="271.0" fitWidth="516.0" pickOnBounds="true" preserveRatio="true" />
+                                       </children>
+                                    </HBox>
+                                    <Button fx:id="saveApplicationButton" layoutX="383.0" layoutY="452.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="91.0" text="Save" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Button>
+                                 </children></AnchorPane>
+                          </items>
+                        </SplitPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+          </Tab>
+          <Tab text="Settings">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="129.0" prefWidth="789.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="10.0">
+                           <children>
+                              <Button fx:id="browseSteamAppsButton" layoutY="218.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="201.0" text="Add (Browse)" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                              <ListView fx:id="steamFoldersListView" layoutY="30.0" prefHeight="185.0" prefWidth="243.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+                              <Label alignment="CENTER" layoutX="1.0" prefHeight="21.0" prefWidth="199.0" text="Steam Folders" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="File Change History">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.40888382687927105" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="689.0" prefWidth="385.0">
+                                 <children>
+                                    <ListView fx:id="fileVersionHistoryListView" layoutX="5.0" layoutY="32.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="32.0" />
+                                    <Label alignment="CENTER" prefHeight="32.0" prefWidth="505.0" text="History" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Label>
+                                 </children></AnchorPane>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                 <children>
+                                    <VBox layoutX="130.0" layoutY="72.0" prefHeight="640.0" prefWidth="515.0" AnchorPane.bottomAnchor="56.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                             <children>
+                                                <Label alignment="CENTER" layoutX="45.0" layoutY="23.0" prefHeight="32.0" prefWidth="505.0" text="Modified Version" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                                <TextArea fx:id="fileHistoryModifiedTextArea" editable="false" layoutX="5.0" layoutY="32.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="32.0" />
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                             <children>
+                                                <Label alignment="CENTER" prefHeight="32.0" prefWidth="505.0" text="Original Version" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0">
+                                                   <font>
+                                                      <Font size="18.0" />
+                                                   </font>
+                                                </Label>
+                                                <TextArea fx:id="fileHistoryOriginalTextArea" editable="false" layoutX="179.0" layoutY="32.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="32.0" />
+                                             </children>
+                                          </AnchorPane>
+                                       </children>
+                                    </VBox>
+                                    <Button fx:id="revertFileModificationButton" layoutX="271.0" layoutY="627.0" mnemonicParsing="false" text="Revert Changes" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0">
+                                       <font>
+                                          <Font size="20.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                              </AnchorPane>
+                          </items>
+                        </SplitPane>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
