@@ -39,6 +39,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
@@ -151,6 +152,18 @@ public class ApplicationGUIController {
 	@FXML
 	private Button revertFileModificationButton;
 
+	@FXML
+	private Hyperlink aboutProjectHyperLink;
+
+	@FXML
+	private Hyperlink aboutRedditHyperlink;
+
+	@FXML
+	private Hyperlink aboutDistributionsHyperLink;
+
+	@FXML
+	private Label aboutVersionLabel;
+
 	public ApplicationGUIController(final Stage stage) {
 		this.stage = stage;
 	}
@@ -203,6 +216,7 @@ public class ApplicationGUIController {
 		gamesListView.getItems().addListener((ListChangeListener<SteamApp>) e -> gamesListViewListChanged());
 		gamesListView.getSelectionModel().selectedItemProperty().addListener(l -> gamesListViewItemSelected());
 
+		setupAccountPage();
 		setImages();
 		changeListView();
 		refreshApps();
@@ -215,6 +229,21 @@ public class ApplicationGUIController {
 
 		gamesListView.getSelectionModel().selectFirst();
 		this.fileVersionHistoryListView.getSelectionModel().selectFirst();
+	}
+
+	private final void setupAccountPage() {
+		this.aboutVersionLabel.setText("Version " + Config.VERSION);
+		this.aboutDistributionsHyperLink.setOnMouseClicked(e -> openURI(aboutDistributionsHyperLink.getText()));
+		this.aboutProjectHyperLink.setOnMouseClicked(e -> openURI(aboutProjectHyperLink.getText()));
+		this.aboutRedditHyperlink.setOnMouseClicked(e -> openURI(aboutRedditHyperlink.getText()));
+	}
+
+	private final void openURI(final String link) {
+		try {
+			Desktop.getDesktop().browse(new URI(link));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private final void rescanSteamFoldersButtonMouseClicked(final MouseEvent e) {
@@ -299,19 +328,21 @@ public class ApplicationGUIController {
 	private final void revertFileModificationButtonMouseClicked(final MouseEvent event) {
 		// TODO implement file reverting
 		final FileModificationHistory selected = fileVersionHistoryListView.getSelectionModel().getSelectedItem();
-		if(selected == null)
+		if (selected == null)
 			return;
-		if(! selected.asFile().exists()) {
-			//TODO maybe add an option to recreate the file?
-			Alerts.showErrorAlert("File not found", "The file '" + selected.asFile().getName() + "' does not exist.", "The file could not be reverted to it's original contents.");
+		if (!selected.asFile().exists()) {
+			// TODO maybe add an option to recreate the file?
+			Alerts.showErrorAlert("File not found", "The file '" + selected.asFile().getName() + "' does not exist.",
+					"The file could not be reverted to it's original contents.");
 			return;
 		}
-		
-		try(FileWriter writer = new FileWriter(selected.asFile())) {
+
+		try (FileWriter writer = new FileWriter(selected.asFile())) {
 			writer.write(selected.getOldContent());
 			writer.close();
-			Alerts.showInformationAlert("Success", "File contents have been reverted", "Successfully reverted the file '" + selected.asFile().getName() + "' to its original contents.");
-		} catch(Exception e) {
+			Alerts.showInformationAlert("Success", "File contents have been reverted",
+					"Successfully reverted the file '" + selected.asFile().getName() + "' to its original contents.");
+		} catch (Exception e) {
 			Alerts.showErrorAlert("Error", "An error occurred when reverting the file", "Cause: " + e.getMessage());
 		}
 	}
@@ -323,8 +354,8 @@ public class ApplicationGUIController {
 		this.revertFileModificationButton.setVisible(selectedExists);
 		this.fileHistoryOriginalTextArea.setVisible(selectedExists);
 		this.fileHistoryModifiedTextArea.setVisible(selectedExists);
-		
-		if(! selectedExists) {
+
+		if (!selectedExists) {
 			this.fileHistoryOriginalTextArea.clear();
 			this.fileHistoryModifiedTextArea.clear();
 			return;
@@ -442,7 +473,7 @@ public class ApplicationGUIController {
 				killVRMonitor.waitFor();
 			}
 
-			//TODO maybe even find another way to deal with these SteamVR bugs
+			// TODO maybe even find another way to deal with these SteamVR bugs
 			// TODO extract this to a settings variable
 			Thread.sleep(5000);
 
