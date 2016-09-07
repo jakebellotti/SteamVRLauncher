@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Slider?>
@@ -25,7 +26,7 @@
                <content>
                   <AnchorPane style="-fx-background-color: yellow;">
                      <children>
-                        <SplitPane dividerPositions="0.3109339407744875" prefHeight="691.0" prefWidth="880.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <SplitPane dividerPositions="0.32801822323462415" prefHeight="691.0" prefWidth="880.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <items>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="649.0" prefWidth="268.0" SplitPane.resizableWithParent="false">
                                  <children>
@@ -136,25 +137,6 @@
                   </AnchorPane>
                </content>
           </Tab>
-          <Tab text="Settings">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="129.0" prefWidth="789.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="10.0">
-                           <children>
-                              <Button fx:id="browseSteamAppsButton" layoutY="218.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="201.0" text="Add (Browse)" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                              <ListView fx:id="steamFoldersListView" layoutY="30.0" prefHeight="185.0" prefWidth="243.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
-                              <Label alignment="CENTER" layoutX="1.0" prefHeight="21.0" prefWidth="199.0" text="Steam Folders" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                 <font>
-                                    <Font size="20.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </AnchorPane>
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
             <Tab text="File Change History">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -209,6 +191,44 @@
                   </AnchorPane>
               </content>
             </Tab>
+          <Tab text="Settings">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="129.0" prefWidth="789.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="10.0">
+                           <children>
+                              <Button fx:id="browseSteamAppsButton" layoutY="218.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="201.0" text="Add (Browse)" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                              <ListView fx:id="steamFoldersListView" layoutY="30.0" prefHeight="185.0" prefWidth="243.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+                              <Label alignment="CENTER" layoutX="1.0" prefHeight="21.0" prefWidth="199.0" text="Steam Folders" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          
+          <Tab text="About">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label alignment="CENTER" layoutX="280.0" layoutY="58.0" text="SteamVR Enhanced Launcher" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                        <Hyperlink alignment="CENTER" layoutX="355.0" layoutY="89.0" text="https://github.com/jakebellotti/SteamVRLauncher" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                        <Label alignment="CENTER" layoutY="30.0" text="By Jake Bellotti" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                     </children></AnchorPane>
+            </content>
+          </Tab>
         </tabs>
       </TabPane>
    </children>
