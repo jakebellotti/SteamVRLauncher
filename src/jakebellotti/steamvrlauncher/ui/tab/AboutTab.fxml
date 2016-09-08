@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="701.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label alignment="CENTER" layoutX="280.0" layoutY="58.0" text="SteamVR Enhanced Launcher" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Hyperlink fx:id="aboutProjectHyperLink" alignment="CENTER" layoutY="137.0" text="https://github.com/jakebellotti/SteamVRLauncher" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Hyperlink>
+      <Label alignment="CENTER" layoutY="56.0" text="By Jake Bellotti" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Hyperlink fx:id="aboutRedditHyperlink" alignment="CENTER" layoutY="86.0" text="https://www.reddit.com/user/jakebeau/" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Hyperlink>
+      <Hyperlink fx:id="aboutDistributionsHyperLink" alignment="CENTER" layoutY="185.0" text="https://github.com/jakebellotti/SteamVRLauncher/tree/master/dist" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Hyperlink>
+      <Label alignment="CENTER" layoutY="116.0" text="Follow The Project" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutY="164.0" text="Distributions" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="aboutVersionLabel" alignment="CENTER" layoutY="26.0" text="Version 0.5" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Separator layoutX="-14.0" layoutY="113.0" prefWidth="200.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="14.0" />
+   </children>
+</AnchorPane>

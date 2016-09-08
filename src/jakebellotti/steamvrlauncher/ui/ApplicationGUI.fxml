@@ -28,7 +28,7 @@
                <content>
                   <AnchorPane style="-fx-background-color: yellow;">
                      <children>
-                        <SplitPane dividerPositions="0.32801822323462415" prefHeight="691.0" prefWidth="880.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <SplitPane dividerPositions="0.30182232346241455" prefHeight="691.0" prefWidth="880.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <items>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="649.0" prefWidth="268.0" SplitPane.resizableWithParent="false">
                                  <children>
@@ -226,7 +226,7 @@
           
           <Tab text="About">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="701.0" prefWidth="880.0">
                      <children>
                         <Label alignment="CENTER" layoutX="280.0" layoutY="58.0" text="SteamVR Enhanced Launcher" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <font>

@@ -1,5 +1,10 @@
 DROP ALL OBJECTS;
 
+CREATE TABLE tblApplicationSettings(
+	fldID									BOOLEAN PRIMARY KEY AUTO_INCREMENT,
+	fldApplicationVersion					INTEGER NOT NULL
+)	ENGINE = INNODB;
+
 CREATE TABLE tblSteamFolder(
 	fldID									INTEGER PRIMARY KEY AUTO_INCREMENT,
 	fldFolderLocation						VARCHAR(255) NOT NULL UNIQUE
@@ -48,7 +53,10 @@ CREATE TABLE tblFileModificationHistory(
 	fldNewContent							VARCHAR(999999) NOT NULL
 )	ENGINE = INNODB;
 
-
+CREATE TABLE tblCategory(
+	fldID									INTEGER PRIMARY KEY AUTO_INCREMENT,
+	fldName									VARCHAR(255) NOT NULL,
+);
 
 
 

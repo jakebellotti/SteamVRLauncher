@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<root>
+	<tables>
+		<table name='tblSteamFolder' lastModifiedVersion='0.5'>
+			CREATE TABLE tblSteamFolder(
+			fldID INTEGER PRIMARY KEY AUTO_INCREMENT,
+			fldFolderLocation VARCHAR(255) NOT NULL UNIQUE
+			) ENGINE = INNODB;
+		</table>
+	</tables>
+</root>
