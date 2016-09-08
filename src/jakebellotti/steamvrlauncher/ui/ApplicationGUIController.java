@@ -31,13 +31,13 @@ import jakebellotti.steamvrlauncher.model.HeadMountedDisplay;
 import jakebellotti.steamvrlauncher.model.ScreenResolution;
 import jakebellotti.steamvrlauncher.model.SteamApp;
 import jakebellotti.steamvrlauncher.model.SteamAppSettings;
-import jakebellotti.steamvrlauncher.model.SteamFolder;
 import jakebellotti.steamvrlauncher.model.SteamVRApp;
 import jakebellotti.steamvrlauncher.model.alvm.ImageTileApplicationsListViewModifier;
 import jakebellotti.steamvrlauncher.model.alvm.LabelApplicationsListViewModifier;
 import jakebellotti.steamvrlauncher.model.hmd.HTCViveHMD;
 import jakebellotti.steamvrlauncher.resources.Resources;
 import jakebellotti.steamvrlauncher.ui.tab.AboutTabController;
+import jakebellotti.steamvrlauncher.ui.tab.SettingsTabController;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -60,7 +60,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import jblib.javafx.Alerts;
 import jblib.javafx.JavaFXUtils;
@@ -78,6 +77,10 @@ public class ApplicationGUIController {
 
 	private final Stage stage;
 	private final ArrayList<SteamApp> loadedApps = new ArrayList<>();
+	
+	//Tab controller instances
+	private final AboutTabController aboutTabController;
+	private final SettingsTabController settingsTabController;
 
 	@FXML
 	private AnchorPane rootPane;
@@ -93,9 +96,6 @@ public class ApplicationGUIController {
 
 	@FXML
 	private ListView<SteamApp> gamesListView;
-
-	@FXML
-	private Button browseSteamAppsButton;
 
 	@FXML
 	private Label renderTargetMultiplierLabel;
@@ -152,9 +152,6 @@ public class ApplicationGUIController {
 	private AnchorPane currentAppImagePane;
 
 	@FXML
-	private ListView<SteamFolder> steamFoldersListView;
-
-	@FXML
 	private ListView<FileModificationHistory> fileVersionHistoryListView;
 
 	@FXML
@@ -165,18 +162,6 @@ public class ApplicationGUIController {
 
 	@FXML
 	private Button revertFileModificationButton;
-
-	// @FXML
-	// private Hyperlink aboutProjectHyperLink;
-	//
-	// @FXML
-	// private Hyperlink aboutRedditHyperlink;
-	//
-	// @FXML
-	// private Hyperlink aboutDistributionsHyperLink;
-	//
-	// @FXML
-	// private Label aboutVersionLabel;
 
 	@FXML
 	private TextField outputResolutionTextField;
@@ -189,6 +174,8 @@ public class ApplicationGUIController {
 
 	public ApplicationGUIController(final Stage stage) {
 		this.stage = stage;
+		this.aboutTabController = new AboutTabController(this);
+		this.settingsTabController = new SettingsTabController(this);
 	}
 
 	public static final Stage load() {
@@ -207,8 +194,9 @@ public class ApplicationGUIController {
 
 	@FXML
 	public void initialize() {
+		// TODO add tabs
+		addTabs();
 		// Set cursors
-		browseSteamAppsButton.setCursor(Cursor.HAND);
 		this.minusRTMImageView.setCursor(Cursor.HAND);
 		this.plusRTMImageView.setCursor(Cursor.HAND);
 		this.launchApplicationButton.setCursor(Cursor.HAND);
@@ -219,7 +207,6 @@ public class ApplicationGUIController {
 		this.revertFileModificationButton.setCursor(Cursor.HAND);
 
 		// Set control event handlers
-		browseSteamAppsButton.setOnMouseClicked(this::browseSteamAppsButtonMouseClicked);
 		this.downApplicationsButton.setOnMouseClicked(this::downApplicationsButtonMouseClicked);
 		this.upApplicationsButton.setOnMouseClicked(this::upApplicationsButtonMouseClicked);
 		this.minusRTMImageView.setOnMousePressed(this::minusRTMImageViewMousePressed);
@@ -241,14 +228,11 @@ public class ApplicationGUIController {
 		this.reprojectionCheckBox.selectedProperty().addListener(l -> this.updateCurrentSettings());
 		gamesListView.getItems().addListener((ListChangeListener<SteamApp>) e -> gamesListViewListChanged());
 		gamesListView.getSelectionModel().selectedItemProperty().addListener(l -> gamesListViewItemSelected());
-
-		// TODO add tabs
-		addTabs();
 		// Add data
 		setImages();
 		changeListView();
 		refreshApps();
-		refreshSteamFolders();
+		settingsTabController.refreshSteamFolders();
 		refreshFileModificationHistory();
 		// TODO add the event handlers for this
 		addSteamAppListViewComboBoxData();
@@ -262,8 +246,8 @@ public class ApplicationGUIController {
 	}
 
 	private final void addTabs() {
-		// TODO remove the account tab completely after it is added here
-		rootTabPane.getTabs().add(createTab("About", new AboutTabController(), "AboutTab.fxml"));
+		rootTabPane.getTabs().add(createTab("Settings", settingsTabController, "SettingsTab.fxml"));
+		rootTabPane.getTabs().add(createTab("About", aboutTabController, "AboutTab.fxml"));
 	}
 
 	private final Tab createTab(final String tabName, final Object controller, final String resourceName) {
@@ -317,39 +301,11 @@ public class ApplicationGUIController {
 		// TODO add a way to change current HMD
 		// TODO just make it go by the current apps settings, rather than
 		// supplying the value
-		// final int hmdWidth = 2560;
-		// final int hmdHeight = 1200;
-
 		final HeadMountedDisplay selected = getSelectedHeadMountedDisplay();
 		if (selected != null) {
 			final ScreenResolution resolution = selected.calculateOutputResolution(renderTargetMultiplier);
 			this.outputResolutionTextField
 					.setText(resolution.getResolutionWidth() + " x " + resolution.getResolutionHeight());
-		}
-
-		// final int newResolutionWidth = (renderTargetMultiplier * hmdWidth) /
-		// 10;
-		// final int newResolutionHeight = (renderTargetMultiplier * hmdHeight)
-		// / 10;
-		// this.outputResolutionTextField.setText(newResolutionWidth + " x " +
-		// newResolutionHeight);
-	}
-
-	// private final void setupAboutPage() {
-	// this.aboutVersionLabel.setText("Version " + Config.VERSION);
-	// this.aboutDistributionsHyperLink.setOnMouseClicked(e ->
-	// openURI(aboutDistributionsHyperLink.getText()));
-	// this.aboutProjectHyperLink.setOnMouseClicked(e ->
-	// openURI(aboutProjectHyperLink.getText()));
-	// this.aboutRedditHyperlink.setOnMouseClicked(e ->
-	// openURI(aboutRedditHyperlink.getText()));
-	// }
-
-	private final void openURI(final String link) {
-		try {
-			Desktop.getDesktop().browse(new URI(link));
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -420,7 +376,7 @@ public class ApplicationGUIController {
 					}
 					Platform.runLater(() -> rootPane.getChildren().remove(loadingScreen));
 					refreshApps();
-					refreshSteamFolders();
+					settingsTabController.refreshSteamFolders();
 				} , "Indexing steam apps");
 
 				Alerts.showInformationAlert("Rescan Steam Folders", "New applications were added",
@@ -524,7 +480,7 @@ public class ApplicationGUIController {
 			return;
 		// TODO finish this
 		final ArrayList<File> folders = new ArrayList<>();
-		this.steamFoldersListView.getItems().forEach(sf -> folders.add(sf.asFile()));
+		this.settingsTabController.getSteamFoldersListView().getItems().forEach(sf -> folders.add(sf.asFile()));
 
 		final Optional<File> steamVRSettingsFile = SteamUtils.findSteamVRSettings(folders);
 		if (!steamVRSettingsFile.isPresent()) {
@@ -594,10 +550,6 @@ public class ApplicationGUIController {
 	private final void refreshFileModificationHistory() {
 		// TODO make this have better peformance
 		this.fileVersionHistoryListView.getItems().setAll(SteamVRLauncher.getConnection().selectAllFileModifications());
-	}
-
-	private final void refreshSteamFolders() {
-		this.steamFoldersListView.getItems().setAll(SteamVRLauncher.getConnection().selectAllSteamFolders());
 	}
 
 	public final String getTaskList() {
@@ -780,7 +732,7 @@ public class ApplicationGUIController {
 		});
 	}
 
-	private final void refreshApps() {
+	public final void refreshApps() {
 		// TODO check to see if there are any at all...
 		Platform.runLater(() -> {
 			final AnchorPane loadingScreen = LoadingOverlayController.getSingleton().getRoot();
@@ -818,98 +770,17 @@ public class ApplicationGUIController {
 
 		this.gamesListView.getItems().setAll(showing);
 	}
-
-	private final void browseSteamAppsButtonMouseClicked(MouseEvent e) {
-		final DirectoryChooser chooser = new DirectoryChooser();
-		final File chosen = chooser.showDialog(stage);
-		if (chosen != null) {
-			int count = SteamVRLauncher.getConnection().selectSteamAppsFolders(chosen);
-			if (count > 0) {
-				Alerts.showErrorAlert("Error", "Folder already exists",
-						"The given folder has already been indexed. You may refresh though.");
-				return;
-			}
-			final AnchorPane loadingScreen = LoadingOverlayController.getSingleton().getRoot();
-			rootPane.getChildren().add(loadingScreen);
-			loadingScreen.toFront();
-
-			loadingScreen.prefWidthProperty().bind(rootPane.widthProperty());
-			loadingScreen.prefHeightProperty().bind(rootPane.heightProperty());
-
-			// TODO clean this up
-
-			// TODO a thread here never closes
-			SteamVRLauncher.submitRunnable(() -> {
-				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
-						.setText("Saving directory"));
-				final int folderID = SteamVRLauncher.getConnection().insertSteamFolder(chosen);
-				final File vrManifestFile = new File(
-						chosen.getAbsolutePath() + SteamConstants.STEAM_VR_APPS_MANIFEST_FILE_LOCATION);
-
-				if (!vrManifestFile.exists()) {
-					Platform.runLater(() -> {
-						rootPane.getChildren().remove(loadingScreen);
-						Alerts.showInformationAlert("Warning", "No VR manifest file found",
-								"No SteamVR apps manifest was found, so no new games were added to the list.");
-						refreshSteamFolders();
-					});
-					return;
-				}
-
-				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
-						.setText("Saving manifest file location"));
-				final int manifestID = SteamVRLauncher.getConnection().insertSteamManifestFile(folderID,
-						vrManifestFile);
-
-				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
-						.setText("Parsing manifest file"));
-				final Optional<ArrayList<SteamVRApp>> apps = SteamVRAppsFileParser.parseManifest(vrManifestFile);
-				if (!apps.isPresent()) {
-					// TODO be more specific with this...
-					// TODO add error log
-					Platform.runLater(() -> {
-						rootPane.getChildren().remove(loadingScreen);
-						Alerts.showErrorAlert("Error", "No VR apps were found or an error occurred",
-								"Look in the 'errors.log' file to see if there was an error.");
-					});
-					return;
-				}
-
-				Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
-						.setText("Saving " + apps.get().size() + " games"));
-				final HashMap<Integer, SteamVRApp> gameIDs = new HashMap<>();
-
-				for (SteamVRApp currentApp : apps.get()) {
-					final int appDatabaseID = SteamVRLauncher.getConnection().insertSteamApp(manifestID, currentApp);
-					if (appDatabaseID > 0) {
-						gameIDs.put(appDatabaseID, currentApp);
-					}
-				}
-
-				final Iterator<Integer> iterator = gameIDs.keySet().iterator();
-				while (iterator.hasNext()) {
-					final Integer currentKey = iterator.next();
-					final SteamVRApp currentApp = gameIDs.get(currentKey);
-					Platform.runLater(() -> LoadingOverlayController.getSingleton().getCurrentTaskLabel()
-							.setText("Downloading image for '" + currentApp.getName() + "'"));
-
-					final Optional<InputStream> result = SteamDBParser.getImage(currentApp);
-					if (result.isPresent()) {
-						final int imageID = SteamVRLauncher.getConnection().insertImage(result.get());
-						if (imageID > 0) {
-							SteamVRLauncher.getConnection().assignImageToSteamApp(currentKey, imageID);
-						}
-					}
-				}
-				Platform.runLater(() -> rootPane.getChildren().remove(loadingScreen));
-				refreshApps();
-				refreshSteamFolders();
-			} , "Indexing steam apps");
-		}
+	
+	public AnchorPane getRootPane() {
+		return rootPane;
 	}
 
 	public Stage getStage() {
 		return stage;
+	}
+
+	public AboutTabController getAboutTabController() {
+		return aboutTabController;
 	}
 
 }
